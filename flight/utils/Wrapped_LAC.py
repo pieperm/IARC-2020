@@ -21,120 +21,113 @@ Notes:
       piston.set_average_adc(?) [0, 1024]
 """
 
-"""
-Imports
-"""
-
 from .lac import LAC
 import time
 import logging
 
-"""
-Constants
-"""
 # Default IDs
-vendorID = 0x4D8
-productID = 0xFC5F
+vendor_id = 0x4D8
+product_id = 0xFC5F
 
 # Retract
-rLimit = 1  # Retract limit
-rPosition = 1  # Ideal retract position
-rMechStop = 0  # Mechanical stop of retract
+r_limit = 1  # Retract limit
+r_position = 1  # Ideal retract position
+r_mech_stop = 0  # Mechanical stop of retract
 
 # Extend
-eLimit = 1022  # Extend limit
-ePosition = 1022  # Ideal extend position
-eMechStop = 1023  # Mechanical stop of extend
+e_limit = 1022  # Extend limit
+e_position = 1022  # Ideal extend position
+e_mech_stop = 1023  # Mechanical stop of extend
 
 # Additional Values
-maxPWM = 1022
-minPWM = 1
-stallTime = 1000  # 1000ms (1 second)
-moveThresh = 5  # Movement threshold
-accVal = 4  # Accuracy value
-maxSpeed = 1022
-sleepVal = 6  # 6 seconds
+max_pwm = 1022
+min_pwm = 1
+stall_time = 1000  # 1000ms (1 second)
+move_thresh = 5  # Movement threshold
+acc_val = 4  # Accuracy value
+max_speed = 1022
+sleep_val = 6  # 6 seconds
 stroke = 300  # max length of LAC (mm)
 
 
-class sLAC:
+class WrappedLAC:
     def __init__(self):
         # Ensures the LAC will not hit mechanical stops
-        if rPosition <= rMechStop:
+        if r_position <= r_mech_stop:
             raise Exception("Retract is set to the mechanical stop.")
-        elif ePosition >= eMechStop:
+        elif e_position >= e_mech_stop:
             raise Exception("Extend is set to the mechanical stop.")
 
         try:
-            self.piston = LAC(vendorID, productID)
-            self.setupLAC()
+            self.piston = LAC(vendor_id, product_id)
+            self.setup()
         except Exception:
             logging.error("Failed to connect to the piston")
 
     # Automatically sets up the LAC
-    def setupLAC(self):
+    def setup(self):
 
         # Retract limit set to 1mm (0-1023)
-        self.piston.set_retract_limit(rLimit)
+        self.piston.set_retract_limit(r_limit)
         print("Retract limit set")
 
         # Extend limit set to 1022mm (0-1023)
-        self.piston.set_extend_limit(eLimit)
+        self.piston.set_extend_limit(e_limit)
         print("Extend limit set")
 
         # How close to target is acceptable
-        self.piston.set_accuracy(accVal)
+        self.piston.set_accuracy(acc_val)
         print("Accuracy set")
 
         # Min speed (mm/s) before stalling
-        self.piston.set_movement_threshold(moveThresh)
+        self.piston.set_movement_threshold(move_thresh)
         print("Movement Threshold set")
 
         # Stall time (ms) set to 1 second
-        self.piston.set_stall_time(stallTime)
+        self.piston.set_stall_time(stall_time)
         print("Stall Time set")
 
         # [1,1022]
-        self.piston.set_max_pwm_value(maxPWM)
+        self.piston.set_max_pwm_value(max_pwm)
         print("Max PWM set")
 
         # [1,1022]
-        self.piston.set_min_pwm_value(minPWM)
+        self.piston.set_min_pwm_value(min_pwm)
         print("Min PWM set")
 
         # Keep on max speed [1,1022]
-        self.piston.set_speed(maxSpeed)
+        self.piston.set_speed(max_speed)
         print("Piston set to max speed")
 
     # Extends the LAC to the max value without hitting mechanical stop
     # Takes 5 seconds to fully extend
-    def extendLAC(self):
+    def extend(self):
         print("Extending...")
         if self.piston:
-            self.piston.set_position(eLimit)
-        time.sleep(sleepVal)  # Wait 6.5 seconds during extension
+            self.piston.set_position(e_limit)
+        time.sleep(sleep_val)  # Wait 6.5 seconds during extension
 
     # Retracts the LAC to the max value without hitting mechanical stop
     # Takes 5 seconds to fully retract
-    def retractLAC(self):
+    def retract(self):
         if self.piston:
-            self.piston.set_position(rLimit)
-        time.sleep(sleepVal)  # Wait 6.5 seconds during retraction
+            self.piston.set_position(r_limit)
+        time.sleep(sleep_val)  # Wait 6.5 seconds during retraction
 
     # Returns the current location of the LAC from [rLimit, eLimit]
     # Prints the metric location (mm) of LAC
-    def positionLAC(self):
+    def position(self):
         if self.piston is None:
             return -1
-        actualPos = int(self.piston.get_feedback())  # Actual 2-bit position
-        distance = (actualPos * stroke) / eLimit  # Calculate metric distance
+        actual_pos = int(self.piston.get_feedback())  # Actual 2-bit position
+        distance = (actual_pos * stroke) / e_limit  # Calculate metric distance
         print(str(distance) + "mm")
-        return actualPos
+        return actual_pos
 
     # Retracts LAC to the original position
     # Factory reset to solve stalling issue
-    def resetLAC(self):
+    def reset(self):
         print("Resetting...")
-        self.retractLAC()
+        self.retract()
         if self.piston:
             self.piston.reset()

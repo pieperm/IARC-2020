@@ -49,7 +49,7 @@ class DetectModule(State):
                 await asyncio.sleep(5)
 
                 logging.info("Module detection results:")
-                async for i in arange(10):
+                async for _ in arange(10):
                     logging.info(pipeline.vision_communication.get())
                     await asyncio.sleep(0.3)
 

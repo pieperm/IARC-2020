@@ -1,5 +1,4 @@
 """The takeoff state"""
-import asyncio
 import logging
 import mavsdk as sdk
 from mavsdk import System
@@ -22,7 +21,7 @@ class Takeoff(State):
                 round(gps.latitude_deg, 8), round(gps.longitude_deg, 8)
             )
             break
-        """Arms and takes off the drone"""
+        # Arms and takes off the drone
         mover: MovementController = MovementController()
         await self._check_arm_or_arm(drone)  # Arms the drone if not armed
         logging.info("Taking off")

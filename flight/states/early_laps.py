@@ -41,6 +41,5 @@ class EarlyLaps(State):
 
                 logging.debug("Lap %d: Turn two", i)
                 await mover.turn(drone)  # turn around pylon 1
-            return ToMast(self.state_settings)
-        else:
-            return ToMast(self.state_settings)
+
+        return ToMast(self.state_settings)
