@@ -63,7 +63,8 @@ disable=missing-module-docstring,
         line-too-long,
         logging-fstring-interpolation,
         no-self-use,
-        wrong-import-order
+        wrong-import-order,
+        too-many-instance-attributes
 
 
 [REPORTS]
