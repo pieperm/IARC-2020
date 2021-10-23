@@ -4,11 +4,11 @@ import logging
 import mavsdk as sdk
 
 from flight import config
+from flight.utils.movement_controller import MovementController
 
 from mavsdk import System
 
 from .state import State
-from flight.utils.movement_controller import MovementController
 from .final import Final
 
 

@@ -26,6 +26,5 @@ class ToMast(State):
                 sdk.offboard.VelocityNedYaw(0.0, 0.0, 0.0, 0.0)
             )
             await asyncio.sleep(10)
-            return DetectModule(self.state_settings)
-        else:
-            return DetectModule(self.state_settings)
+
+        return DetectModule(self.state_settings)

@@ -75,7 +75,7 @@ class StateSettings:
         This should only generally only be used with simple takeoff
             test_type(str) 'module' for module detection or 'text' for mast text detection
         """
-        if test_type == "module" or test_type == "text":
+        if test_type in ("module", "text"):
             self.vision_test_type = test_type
         else:
             raise ValueError(f"test_type must be 'module' or 'text', got {test_type}")
