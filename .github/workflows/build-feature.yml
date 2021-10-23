@@ -1,0 +1,29 @@
+name: Build Feature
+on:
+  push:
+    branches:
+      - 'feature/*'
+jobs:
+  linter:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Sleep for 10 seconds
+        uses: jakejarvis/wait-action@master
+        with:
+          time: '10s'
+      - name: Set up Python environment
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.7
+      - name: Install dependencies
+        run: |
+          python -v
+          python -m pip install --upgrade pip
+          pip install poetry
+          poetry install
+          pip install pylint
+          pip install mavsdk
+      - name: Analyze code with linter
+        run: |
+          pylint $(find . -name "*.py" | xargs)
